@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Михаил Леонтьев](https://up.htmlacademy.ru/javascript/17/user/233232).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Тимоновский](https://up.htmlacademy.ru/javascript/17/user/768125).
 
 ---
 
