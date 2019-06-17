@@ -1,14 +1,19 @@
 'use strict';
 
+var MIN_X = 40;
+var MAX_X = 1200 - 40;
+var MIN_Y = 130;
+var MAX_Y = 630 - 40;
+
+// Получаем шаблон
+var pin = document.querySelector('#pin').content.querySelector('.map__pin');
+
 // Отрисовка карты
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
-var MIN_X = 0;
-var MAX_X = 1200 / 2 - 40;
-
-var MIN_Y = 130;
-var MAX_Y = 630 - 40;
+// Массив вида жилья
+var offer = ['palace', 'flat', 'house', 'bungalo'];
 
 // Находим случайный элемент
 var getRandomItem = function (array) {
@@ -21,46 +26,67 @@ var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-// Массив вида жилья
-var offer = ['palace', 'flat', 'house', 'bungalo'];
+// Подставляем номер юзера
+var imgPathGenerator = function (max) {
+  return new Array(max).fill(1).map(function (el, i) {
+    return 'img/avatars/user0' + (i + 1) + '.png';
+  });
+};
 
-var ads = [];
+var avatarImgs = imgPathGenerator(8);
 
-var arr = [1, 2, 3, 4, 5, 6, 7, 8];
+// Генерация случайного не повторяющегося числа
+var shuffle = function (arr) {
+  var shuffledArr = arr.slice();
+  var i = shuffledArr.length;
+  while (--i >= 0) {
+    var randNum = Math.floor(Math.random() * (i + 1));
+    var temp = shuffledArr[randNum];
+    shuffledArr[randNum] = shuffledArr[i];
+    shuffledArr[i] = temp;
+  }
+  return shuffledArr;
+};
 
-var i = arr.length;
-while (--i >= 0) {
-  var randNum = Math.floor(Math.random() * (i + 1));
-  var temp = arr[randNum];
-  arr[randNum] = arr[i];
-  arr[i] = temp;
-}
+// Генерация объекта с данными
+var renderData = function (avatar, type, coords) {
+  var data = {
+    'author': {'avatar': avatar},
+    'offer': {'type': type},
+    'location': {'x': coords.x, 'y': coords.y}
+  };
+  return data;
+};
 
-// eslint-disable-next-line no-redeclare
-for (var i = 0; i < 8; i++) {
+var renderMapPins = function (ad) {
+  // Копируем и вставляем шаблон
+  var mapPin = pin.cloneNode(true);
+  var mapPins = document.querySelector('.map__pins');
+  var addMapPins = mapPins.appendChild(mapPin);
 
-  var renderData = function () {
-    var data = {
-      'author': {'avatar': 'img/avatars/user0' + arr[i] + '.png'},
-      'offer': {'type': getRandomItem(offer)},
-      'location': {'x': getRandomNumber(MIN_X, MAX_X), 'y': getRandomNumber(MIN_Y, MAX_Y)}
+  // Подставляем данные
+  mapPin.querySelector('img').src = ad.author.avatar;
+  mapPin.style = 'left:' + ad.location.x + 'px; top:' + ad.location.y + 'px;';
+
+  return addMapPins;
+};
+
+
+var generatePins = function (_max) {
+  var avatars = shuffle(avatarImgs);
+  var ads = [];
+
+  for (var i = 0; i < 8; i++) {
+    var avatar = avatars[i];
+    var type = getRandomItem(offer);
+    var coords = {
+      x: getRandomNumber(MIN_X, MAX_X),
+      y: getRandomNumber(MIN_Y, MAX_Y)
     };
-    return data;
-  };
-  ads.push(renderData());
+    var adData = renderData(avatar, type, coords);
+    ads.push(adData);
+    renderMapPins(adData);
+  }
+};
 
-  var renderMapPins = function () {
-    var pin = document.querySelector('#pin').content.querySelector('.map__pin');
-    var mapPin = pin.cloneNode(true);
-    var mapPins = document.querySelector('.map__pins');
-    var addMapPins = mapPins.appendChild(mapPin);
-
-    mapPin.querySelector('img').src = ads[i].author.avatar;
-    mapPin.style = 'left:' + ads[i].location.x + 'px; top:' + ads[i].location.y + 'px;';
-
-    return addMapPins;
-  };
-  renderMapPins();
-}
-
-
+generatePins(8);
