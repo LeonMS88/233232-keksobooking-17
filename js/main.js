@@ -10,7 +10,7 @@ var pin = document.querySelector('#pin').content.querySelector('.map__pin');
 
 // Отрисовка карты
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+map.classList.add('map--faded');
 
 // Массив вида жилья
 var offer = ['palace', 'flat', 'house', 'bungalo'];
@@ -58,6 +58,7 @@ var renderData = function (avatar, type, coords) {
   return data;
 };
 
+// Генерация меток
 var renderMapPins = function (ad) {
   // Копируем и вставляем шаблон
   var mapPin = pin.cloneNode(true);
@@ -71,7 +72,8 @@ var renderMapPins = function (ad) {
   return addMapPins;
 };
 
-
+// Генерация меток на карте
+// eslint-disable-next-line no-unused-vars
 var generatePins = function (_max) {
   var avatars = shuffle(avatarImgs);
   var ads = [];
@@ -89,4 +91,88 @@ var generatePins = function (_max) {
   }
 };
 
-generatePins(8);
+// generatePins(8);
+
+// Добавление атрибута
+var setAtt = function (doc, att, item) {
+
+  for (var i = 0; i < doc.length; i++) {
+    var docList = doc[i];
+    docList.setAttribute(att, item);
+  }
+};
+
+// Блокировка полей формы
+var fieldsetForm = document.querySelector('.ad-form');
+var fieldsetList = fieldsetForm.querySelectorAll('fieldset');
+
+var formLock = function () {
+  setAtt(fieldsetList, 'disabled', 'true');
+  return fieldsetList;
+};
+
+formLock();
+
+// Блокировка формы с фильтрами
+var mapFilters = document.querySelector('.map__filters');
+mapFilters.classList.add('ad-form--disabled');
+
+var mapFiltersLock = function () {
+  var mapFiltersList = mapFilters.querySelectorAll('.map__filter');
+  setAtt(mapFiltersList, 'disabled', 'true');
+  return mapFiltersList;
+};
+
+mapFiltersLock();
+
+// Получаем координаты главной метки
+var pinMain = document.querySelector('.map__pin--main');
+
+var getCoordsMainPin = function (elem) {
+
+  var coords = {
+    x: elem.offsetLeft,
+    y: elem.offsetTop
+  };
+
+  return coords;
+};
+
+// Записываем координаты метки в строку адреса
+var coordsPin = function () {
+
+  var coordPinMain = getCoordsMainPin(pinMain);
+  fieldsetForm.querySelector('#address').value = coordPinMain.x + ',' + coordPinMain.y;
+};
+
+coordsPin();
+
+// Активация карты и форм
+var activeMode = function () {
+  pinMain.addEventListener('mouseup', function () {
+
+    // Удаление класса
+    var removeClass = function (doc, item) {
+      doc.classList.remove(item);
+    };
+
+    removeClass(map, 'map--faded');
+    removeClass(fieldsetForm, 'ad-form--disabled');
+    removeClass(mapFilters, 'ad-form--disabled');
+
+    // Удаление атрибута
+    var removeAtt = function (doc, att, item) {
+
+      for (var i = 0; i < doc.length; i++) {
+        var docList = doc[i];
+        docList.removeAttribute(att, item);
+      }
+    };
+
+    removeAtt(formLock(), 'disabled', 'false');
+    removeAtt(mapFiltersLock(), 'disabled', 'false');
+
+  });
+};
+
+activeMode();
