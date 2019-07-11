@@ -93,7 +93,7 @@ var generatePins = function (_max) {
 
 // generatePins(8);
 
-// Добавление атрибута
+// Добавление атрибута disabled всем полям
 var setAtt = function (doc, att, item) {
 
   for (var i = 0; i < doc.length; i++) {
@@ -176,3 +176,70 @@ var activeMode = function () {
 };
 
 activeMode();
+
+// Добавление атрибута обязательным полям
+var addAtt = function (doc, att, val) {
+  doc.setAttribute(att, val);
+};
+
+var title = document.querySelector('#title');
+addAtt(title, 'required', '');
+addAtt(title, 'minlength', '30');
+addAtt(title, 'maxlength', '100');
+
+var price = document.querySelector('#price');
+addAtt(price, 'required', '');
+addAtt(price, 'max', '1000000');
+
+var type = document.querySelector('#type');
+addAtt(type, 'required', '');
+
+type.addEventListener('change', function (evt) {
+  if (evt.target.value === 'bungalo') {
+    price.placeholder = '0';
+    price.min = '0';
+  } else if (evt.target.value === 'flat') {
+    price.placeholder = '1000';
+    price.min = '1000';
+  } else if (evt.target.value === 'house') {
+    price.placeholder = '5000';
+    price.min = '5000';
+  } else if (evt.target.value === 'palace') {
+    price.placeholder = '10000';
+    price.min = '10000';
+  }
+});
+
+var address = document.querySelector('#address');
+addAtt(address, 'readonly', 'readonly');
+
+var timein = document.querySelector('#timein');
+var timeinOption = timein.querySelectorAll('option');
+addAtt(timein, 'required', '');
+
+var timeout = document.querySelector('#timeout');
+var timeoutOption = timeout.querySelectorAll('option');
+addAtt(timeout, 'required', '');
+
+timein.addEventListener('change', onChange);
+
+timeout.addEventListener('change', onChange);
+
+function onChange(e) {
+  var selectedValue = e.target.value;
+  var targetId = e.target.id;
+  var mirrorOptions = timeinOption;
+
+  if (targetId === 'timein') {
+    mirrorOptions = timeoutOption;
+  }
+  mirrorOptions.forEach(function (option) {
+    option.selected = false;
+    if (option.value === selectedValue) {
+      option.selected = true;
+    }
+  });
+}
+
+document.querySelector('.ad-form__submit');
+fieldsetForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
